@@ -6,7 +6,6 @@ from http import HTTPStatus
 import requests
 from dotenv import load_dotenv
 from telegram import Bot
-from telegram.ext import Updater
 
 import exceptions
 
@@ -29,7 +28,6 @@ HOMEWORK_STATUSES = {
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
-updater = Updater(token=TELEGRAM_TOKEN)
 
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
