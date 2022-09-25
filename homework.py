@@ -117,12 +117,16 @@ def main():
         raise (message)
     bot = Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
+    msg = ""
     while True:
         try:
             response = get_api_answer(current_timestamp)
             homework = check_response(response)
-            message = parse_status(homework)
-            send_message(bot, message)
+            if homework:
+                message = parse_status(homework)
+                if message != msg:
+                    send_message(bot, message)
+                    msg = message
             current_timestamp = response.get('current_date', current_timestamp)
             time.sleep(RETRY_TIME)
         except Exception as error:
