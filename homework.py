@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from telegram import Bot
 from telegram.ext import Updater
 
+import exceptions
+
 load_dotenv()
 
 
@@ -35,7 +37,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 
+
 def send_message(bot, message):
+    "Отправка сообщений"
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logger.info('Сообщение отправлено!')
@@ -45,12 +49,12 @@ def send_message(bot, message):
         raise (message)
 
 
-
 def get_api_answer(current_timestamp):
+    "Получение ответа от API"
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     try:
-        response = requests.get(ENDPOINT, headers=HEADERS, params=params)        
+        response = requests.get(ENDPOINT, headers=HEADERS, params=params)
     except Exception as error:
         raise exceptions.ServerGet(error)
     if response.status_code != HTTPStatus.OK:
@@ -61,6 +65,7 @@ def get_api_answer(current_timestamp):
 
 
 def check_response(response):
+    "Проверка запроса"
     try:
         homeworks = response['homeworks']
     except KeyError:
@@ -75,6 +80,7 @@ def check_response(response):
 
 
 def parse_status(homework):
+    "Статус проверки"
     if 'homework_name' in homework:
         homework_name = homework.get('homework_name')
     else:
