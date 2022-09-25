@@ -39,7 +39,7 @@ logger.addHandler(logging.StreamHandler())
 
 
 def send_message(bot, message):
-    "Отправка сообщений"
+    """Отправка сообщений"""
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logger.info('Сообщение отправлено!')
@@ -50,7 +50,7 @@ def send_message(bot, message):
 
 
 def get_api_answer(current_timestamp):
-    "Получение ответа от API"
+    """Получение ответа от API"""
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     try:
@@ -65,7 +65,7 @@ def get_api_answer(current_timestamp):
 
 
 def check_response(response):
-    "Проверка запроса"
+    """Проверка запроса"""
     try:
         homeworks = response['homeworks']
     except KeyError:
@@ -80,11 +80,13 @@ def check_response(response):
 
 
 def parse_status(homework):
-    "Статус проверки"
+    """Статус проверки"""
     if 'homework_name' in homework:
         homework_name = homework.get('homework_name')
     else:
-        raise KeyError('API вернул домашнее задание без ключа "homework_name" key')
+        raise KeyError(
+            'API вернул домашнее задание без ключа "homework_name" key'
+        )
     homework_status = homework.get('status')
     verdict = HOMEWORK_STATUSES.get(homework_status)
     if verdict is None:
@@ -95,7 +97,7 @@ def parse_status(homework):
 
 
 def check_tokens():
-    "Проверяет наличие токенов"
+    """Проверяет наличие токенов"""
     if PRACTICUM_TOKEN or TELEGRAM_TOKEN or TELEGRAM_CHAT_ID:
         return True
     elif PRACTICUM_TOKEN is None:
