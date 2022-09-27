@@ -1,5 +1,11 @@
-class server_get(Exception):
+class ServerGet(Exception):
     pass
 
-class get_api_200(Exception):
+class GetApi200(Exception):
+    pass
+
+class FailMessage(Exception):
+    pass
+
+class TokkenError(Exception):
     pass
