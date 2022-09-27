@@ -44,7 +44,7 @@ def send_message(bot, message):
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logger.info('Сообщение отправлено!')
     except Exception as error:
-        raise exceptions.FailMessage('Ошибка отправки сообщения')
+        raise exceptions.FailMessage(f'Ошибка отправки сообщения {error}')
 
 
 def get_api_answer(current_timestamp):
@@ -79,7 +79,7 @@ def parse_status(homework):
         raise KeyError(
             'В homework нет ключа "homework_name" или "status"'
         )
-    homework_name = homework.get('homework_name')        
+    homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
     verdict = HOMEWORK_STATUSES.get(homework_status)
     if verdict is None:
@@ -92,7 +92,7 @@ def parse_status(homework):
 def check_tokens():
     """Проверяет наличие токенов."""
     if PRACTICUM_TOKEN and TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
-        return True    
+        return True
     return False
 
 
@@ -118,7 +118,7 @@ def main():
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             send_message(bot, message)
-            logger.error(error)            
+            logger.error(error)
         finally:
             time.sleep(RETRY_TIME)
 
