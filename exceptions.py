@@ -9,3 +9,6 @@ class FailMessage(Exception):
 
 class TokkenError(Exception):
     pass
+
+class ListErr(Exception):
+    pass
