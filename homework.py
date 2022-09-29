@@ -66,11 +66,10 @@ def check_response(response):
         homeworks = response['homeworks']
     except KeyError:
         raise KeyError('Отсутствует ключ у homeworks')
-    try:
-        homework = homeworks[0]
-    except IndexError:
-        raise IndexError('Список домашних работ пуст')
-    return homework
+    if isinstance(homeworks, list):
+        return homeworks
+    else:
+        raise exceptions.ListErr('homeworks не список')
 
 
 def parse_status(homework):
@@ -79,9 +78,9 @@ def parse_status(homework):
         raise KeyError(
             'В homework нет ключа "homework_name" или "status"'
         )
-    homework_name = homework.get('homework_name')
-    homework_status = homework.get('status')
-    verdict = HOMEWORK_STATUSES.get(homework_status)
+    homework_name = homework['homework_name']
+    homework_status = homework['status']
+    verdict = HOMEWORK_STATUSES[homework_status]
     if verdict is None:
         raise KeyError(f'Ошибка статуса homework : {verdict}')
     logger.info(f'Новый статус {verdict}')
@@ -91,9 +90,7 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверяет наличие токенов."""
-    if PRACTICUM_TOKEN and TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
-        return True
-    return False
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
 def main():
@@ -104,16 +101,16 @@ def main():
         raise exceptions.TokkenError(message)
     bot = Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
-    msg = ""
     while True:
         try:
             response = get_api_answer(current_timestamp)
-            homework = check_response(response)
-            if homework:
-                message = parse_status(homework)
-                if message != msg:
-                    send_message(bot, message)
-                    msg = message
+            homeworks = check_response(response)
+            if not homeworks:
+                logger.info("Статус домашней работы не обновился")
+                time.sleep(RETRY_TIME)
+            homework = homeworks[0]
+            message = parse_status(homework)
+            send_message(bot, message)
             current_timestamp = response.get('current_date', current_timestamp)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
